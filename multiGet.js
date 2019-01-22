@@ -43,9 +43,7 @@ let downloadFile = async function() { // async-await
                 })
                 .catch((error) => {
                     if (error.response) {
-                        console.log(error.response.data);
-                        console.log(error.response.status);
-                        console.log(error.response.headers);
+                        console.log(`Error code: ${error.response.status}`);
                     }
                 });
 
