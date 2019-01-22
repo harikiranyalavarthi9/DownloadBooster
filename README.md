@@ -1,5 +1,5 @@
 # MultiGetApp
-A Sample Download Booster App that helps to download a file in 1 MiB chunks serially.
+A Sample Download Booster App that helps to download a file from a http url in 1 MiB chunks serially.
 
 Features:
 * Source URL/File can be downloaded serially in configurable chunks
