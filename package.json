@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/harikiranyalavarthi9/MultiGetApp#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "pkg": "^4.3.7"
   }
 }

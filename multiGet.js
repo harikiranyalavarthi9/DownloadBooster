@@ -1,32 +1,47 @@
-const http = require('http');
+const axios = require('axios');
 const fs = require('fs');
-let b = Buffer.alloc(0);
 
-if(process.argv.length < 6 || process.argv.length > 6) {
-    console.log(`Usage: `+process.argv[0]+` [OPTIONS] url \n\t -o string \n\t\tWrite output to <file> instead of default \n\t -parallel \n\t\tDownload chunks in parallel instead of sequentially`);
-}
-else {
-    const CHUNK_SIZE = 1024000;
-    let chunkArray = [];
-    let numberOfBytesReceived = 0;
-    const file = fs.createWriteStream(process.argv[3]);
+let fileName = process.argv[3] || 'file.txt'; // Get file name from command line arguments 
+let url = process.argv[5]; // Get http url from command line arguments 
+let numberofChunks = 4; // Default number of requests need to be made to the server
+const CHUNK_SIZE = 1048576 // 1 MiB = 1024 KB * 1024 B
 
-    http.get(process.argv[5], function(response) {
-        console.log("Downloading first 4 chunks of "+process.argv[5]+" to "+process.argv[3]);
-        response.pipe(file);
-        response.on('data', (chunk) => {
-            numberOfBytesReceived += chunk.length;
-            chunkArray.push(chunk);
-            b = Buffer.concat([b, chunk]);
-            if(b.length >= 4e6) {
-                response.destroy();
-                file.close();
+let downloadFile = async function() { // async-await 
+    if(process.argv.length < 6 || process.argv.length > 6) {
+        console.info(`Usage: `+process.argv[0]+` [OPTIONS] url \n\t -output string \n\t\tWrite output to <file> instead of default \n\t -url \n\t\tDownload chunks in parallel instead of sequentially`);
+    }
+    else {
+        console.log("Downloading first 4 chunks of "+url+" to "+fileName);
+        for(let i=0; i<numberofChunks; i++) { // Seriel execution
+            const requestConfig = {
+                headers: {
+                    Range: `bytes=`+(i*CHUNK_SIZE)+`-`+((i+1)*CHUNK_SIZE-1) // Range headers Eg: Range: bytes=0-1048576
+                },
+                responseType: `arraybuffer` // arraybuffer for blob data type
             }
-        });
-        response.on('end', () => {
-            console.log(chunkArray.length);
-            console.log(numberOfBytesReceived);
-            console.log("...done");
-        });
-    });
+
+            // console.log(requestConfig);
+            
+            await axios.get(url, requestConfig).then((response) => { // Perform axios get call using the above request config
+                // console.log(response.headers);
+                let blob = response.data;
+                let offset = 0;
+                let chunkLength = (i+1)*CHUNK_SIZE - (i*CHUNK_SIZE);
+                let position = i*CHUNK_SIZE;
+                fs.open(fileName, 'w', function(err, fd) { 
+                    if (err) {
+                        throw 'could not open file: ' + err;
+                    }
+                    fs.write(fd, blob, offset, chunkLength, position, function(err) { // write blob file in 1 MiB chunks serially 
+                        if (err) throw 'error writing file: ' + err;
+                        fs.close(fd, function() {
+                            console.log('Downloaded '+(i+1)+' MiB chunk successfully');
+                        });
+                    });
+                });
+            });
+        }
+    }
 }
+
+downloadFile();
