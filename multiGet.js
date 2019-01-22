@@ -36,7 +36,7 @@ let downloadFile = async function() { // async-await
                         fs.write(fd, blob, offset, chunkLength, position, function(err) { // write blob file in 1 MiB chunks serially 
                             if (err) throw `Error writing file: ${err}`;
                             fs.close(fd, function() {
-                                console.log(`Downloaded ${i+1} MiB chunk successfully`);
+                                console.log(`Downloaded chunk ${i+1} successfully`);
                             });
                         });
                     });
