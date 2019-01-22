@@ -30,7 +30,10 @@ node multiGet -output <file_name-string> -url <url_name-string> -chunkSize <chun
 ```
 
 Chunk Size is measured in MiB. Eg: -chunkSize 2
-Chunk Size and No.of Chunks/Requests are optional. By default, Chunk Size is set to 1MiB and No.of Chunks to 4.
+
+Chunk Size and No.of Chunks/Requests are optional. 
+
+By default, Chunk Size is set to 1MiB and No.of Chunks to 4.
 
 
 To run using executable files:
