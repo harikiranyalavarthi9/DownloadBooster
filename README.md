@@ -16,7 +16,7 @@ cd MultiGetApp
 
 You can run the application on Windows, MacOS, Linux either using node or using executable files.
 
-To run using node
+######To run using node
 
 Install node modules:
 
@@ -35,8 +35,7 @@ Chunk Size and No.of Chunks/Requests are optional.
 
 By default, Chunk Size is set to 1MiB and No.of Chunks to 4.
 
-
-To run using executable files:
+######To run using executable files:
 
 For Windows: 
 
