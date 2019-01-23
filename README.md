@@ -10,8 +10,8 @@ Features:
 You would need to clone the repository to run the application
 
 ```bash
-git clone https://github.com/harikiranyalavarthi9/MultiGetApp.git
-cd MultiGetApp
+git clone https://github.com/harikiranyalavarthi9/DownloadBooster.git
+cd DownloadBooster
 ```
 
 You can run the application on Windows, MacOS, Linux either using node or using executable files.
