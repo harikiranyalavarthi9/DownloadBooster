@@ -1,12 +1,12 @@
-const axios = require('axios');
-const fs = require('fs');
+import axios from 'axios';
+import fs from 'fs';
 
-let fileName = process.argv[3] || 'file.txt'; // Get file name from command line arguments 
-let url = process.argv[5]; // Get http url from command line arguments 
+let fileName = process.argv[3] || 'file.txt'; // Get file name from command line arguments
+let url = process.argv[5]; // Get http url from command line arguments
 let numberofChunks = process.argv[9] || 4; // Default number of requests need to be made to the server
-const CHUNK_SIZE = process.argv[7] * 1048576 || 1048576; // 1 MiB = 1024 KB * 1024 B
+const CHUNK_SIZE = process.argv[7] * 1024 || 1024; // 1 KB = 1024 B
 
-let downloadFile = async function() { // async-await 
+let downloadFile = async () => { // async-await 
     if(process.argv.length < 6 || process.argv.length > 10) {
         console.info(`Usage: ${process.argv[0]} [OPTIONS] url \n\t -output string \n\t\tWrite output to <file> instead of default \n\t -url \n\t\tDownload chunks in parallel instead of sequentially`);
     }
@@ -19,34 +19,31 @@ let downloadFile = async function() { // async-await
                 },
                 responseType: 'arraybuffer' // arraybuffer for blob data type
             }
-
-            // console.log(requestConfig);
             
             await axios.get(url, requestConfig)
-                .then((response) => { // Perform axios get call using the above request config
-                    // console.log(response.headers);
-                    let blob = response.data;
-                    let offset = 0;
-                    let chunkLength = (i+1)*CHUNK_SIZE - (i*CHUNK_SIZE);
-                    let position = i*CHUNK_SIZE;
-                    fs.open(fileName, 'w', function(err, fd) { 
-                        if (err) {
-                            throw `Could not open file: ${err}`;
-                        }
-                        fs.write(fd, blob, offset, chunkLength, position, function(err) { // write blob file in 1 MiB chunks serially 
-                            if (err) throw `Error writing file: ${err}`;
-                            fs.close(fd, function() {
-                                console.log(`Downloaded chunk ${i+1} successfully`);
-                            });
+            .then((response) => { // Perform axios get call using the above request config
+                let blob = response.data;
+                let offset = 0;
+                let chunkLength = (i+1)*CHUNK_SIZE - (i*CHUNK_SIZE);
+                let position = i*CHUNK_SIZE;
+                fs.open(fileName, 'w', (err, fd) => {
+                    if (err) {
+                        throw `Could not open file: ${err}`;
+                    }
+                    fs.write(fd, blob, offset, chunkLength, position, (err) => { // write blob file in 1 MiB chunks serially 
+                        if (err) throw `Error writing file: ${err}`;
+                        fs.close(fd, () => {
+                            console.log(`Downloaded chunk ${i+1} successfully`);
                         });
                     });
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        console.log(`Error code: ${error.response.status}`);
-                    }
                 });
-
+            })
+            .catch((error) => {
+                if (error.response) {
+                    console.log(error.response);
+                    console.log(`Error code: ${error.response.status}`);
+                }
+            });
         }
     }
 }
