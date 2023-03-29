@@ -4,7 +4,7 @@ import fs from 'fs';
 let fileName = process.argv[3] || 'file.txt'; // Get file name from command line arguments
 let url = process.argv[5]; // Get http url from command line arguments
 let numberofChunks = process.argv[9] || 4; // Default number of requests need to be made to the server
-const CHUNK_SIZE = process.argv[7] * 1024 || 1024; // 1 KB = 1024 B
+const CHUNK_SIZE = process.argv[7] * 1048576 || 1048576; // 1 MiB = 1024 KB * 1024 B
 
 let downloadFile = async () => { // async-await 
     if(process.argv.length < 6 || process.argv.length > 10) {
